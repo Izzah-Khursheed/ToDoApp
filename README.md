@@ -1,4 +1,4 @@
-﻿# Little List
+# Little List
 
 A focused, offline task app built with Expo SDK 58, React Native 0.88, TypeScript, and Expo Router. The interface combines purple, pink, and white with subtle animations and a simple task workflow.
 
@@ -21,70 +21,59 @@ A focused, offline task app built with Expo SDK 58, React Native 0.88, TypeScrip
 - Android SDK Platform-Tools (`adb`) available in your terminal.
 - A physical Android phone with Developer options and USB debugging enabled.
 - A data-capable USB cable. Unlock the phone and accept its USB debugging authorization prompt for your computer.
-- An installed development build of this project. To compile it locally, also configure the Android SDK and a compatible JDK using the [Expo Android environment setup guide](https://docs.expo.dev/get-started/set-up-your-environment/).
+- Android SDK and a compatible JDK configured using the [Expo Android environment setup guide](https://docs.expo.dev/get-started/set-up-your-environment/).
 
 No API keys, backend services, or environment variables are needed to run the app.
 
-## First-time setup
+## Run on your Android phone
 
-From the repository root:
+Use this workflow from the repository root:
+
+1. Install the project dependencies:
+
+   ```powershell
+   npm install
+   ```
+
+2. Connect your phone by USB, unlock it, and accept the USB debugging prompt.
+3. Confirm the phone is connected:
+
+   ```powershell
+   adb devices
+   ```
+
+   Your phone should appear with the status `device`. If it says `unauthorized`, accept the debugging prompt on the phone and run the command again.
+
+4. Build, install, and launch the development app:
+
+   ```powershell
+   npx expo run:android --device
+   ```
+
+Select your physical phone when prompted. Expo builds and installs the Android development app and starts Metro, the JavaScript development server. Keep the terminal running while using the app.
+
+The first build can take longer while Gradle downloads dependencies and compiles native code. Later builds reuse cached work. Save source files to see changes through Fast Refresh; you do not need to rerun the build command for each JavaScript, TypeScript, or styling edit. Press `r` in Metro's terminal to reload, or `Ctrl+C` to stop the server.
+
+Run `npm install` on initial setup or when dependencies change. Connecting the phone, checking `adb devices`, and running `npx expo run:android --device` is the normal launch workflow for this project.
+
+### USB recovery if the project cannot load
+
+The following commands were used to resolve a connection timeout to an outdated Wi-Fi address. They are a troubleshooting fallback, not extra steps required for the normal workflow above.
+
+If Metro is running, stop it in its terminal before starting this recovery session. In the first terminal:
 
 ```powershell
-npm ci
-adb devices -l
-```
-
-Your phone should appear with the status `device`. If it says `unauthorized`, unlock the phone and accept the debugging prompt before continuing.
-
-### Build and install the Android development app
-
-If this project's development build is already installed on the phone, skip this step and use the daily workflow below.
-
-```powershell
-npx expo run:android --device
-```
-
-Select your physical phone when prompted. This command compiles and installs the native Android app and starts the development server. The equivalent command through the repository's npm script is:
-
-```powershell
-npm run android -- --device
-```
-
-Use one of these commands, not both. A first native build takes longer because Gradle downloads dependencies and compiles native code. Once the app is installed, ordinary JavaScript, TypeScript, and styling changes do not require another native build.
-
-## Daily workflow: run on your Android phone over USB
-
-These are the commands used for the USB connection when resolving the phone's project-loading error. Run them from the project root. For this Windows checkout:
-
-```powershell
-cd F:\Apps\ToDoApp
-```
-
-### Terminal 1: connect the phone and start Metro
-
-```powershell
-adb devices -l
 adb reverse tcp:8081 tcp:8081
 npx expo start --dev-client --localhost --port 8081
 ```
 
-Keep this terminal running. Metro serves the app's JavaScript bundle. `--dev-client` selects the installed development build, and `adb reverse` forwards the phone's port 8081 to the computer's port 8081 over USB.
-
-If Metro is already running for this project on port 8081, reuse it instead of starting a second instance.
-
-### Terminal 2: open the installed development build
-
-With Metro ready, run this exact command in a second terminal:
+Keep that terminal running. In a second terminal, open the installed development app with the explicit USB server address:
 
 ```powershell
 adb shell am start -a android.intent.action.VIEW -d 'myfirstapp://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081' com.haseebusman.MyFirstApp
 ```
 
-This opens **Little List** and explicitly connects it to `http://127.0.0.1:8081` through the USB forwarding rule. It avoids reusing an outdated Wi-Fi address saved by the development launcher.
-
-Save a source file to see changes through Fast Refresh. Press `r` in Metro's terminal to reload the connected app. Press `Ctrl+C` in that terminal when you finish development.
-
-**Keep the USB cable connected and Metro running during this workflow.** The installed development build needs Metro to load the current project; it is not a standalone release build. Rerun `adb reverse tcp:8081 tcp:8081` after reconnecting the phone or restarting ADB.
+USB forwarding connects the phone's port 8081 to the computer's port 8081. Keep USB connected during this recovery workflow and rerun `adb reverse` after reconnecting the phone or restarting ADB. The development app needs Metro to load the current project; it is not a standalone release build.
 
 ## Run over Wi-Fi instead
 
@@ -94,7 +83,7 @@ Connect the computer and phone to the same network, then start Metro in LAN mode
 npx expo start --dev-client --lan --port 8081
 ```
 
-Scan the terminal's QR code to open the project in the installed development build. Allow the development server through your computer's firewall when prompted. If the network isolates devices or the connection times out, use the USB workflow above.
+Scan the terminal's QR code to open the project in the installed development build. Allow the development server through your computer's firewall when prompted. If the network isolates devices or the connection times out, use the USB recovery steps above.
 
 Stop an existing localhost Metro session before switching to LAN mode on the same port.
 
@@ -120,9 +109,9 @@ For iOS, local device builds require macOS and Xcode. Windows users can use [EAS
 
 | Symptom | What to do |
 | --- | --- |
-| “There was a problem loading the project” or a connection timeout | Confirm Metro is running, rerun `adb reverse tcp:8081 tcp:8081`, and use the explicit USB launch command above. A saved LAN address can become unreachable. |
+| “There was a problem loading the project” or a connection timeout | Confirm Metro is running, rerun `adb reverse tcp:8081 tcp:8081`, and use the explicit launch command in the USB recovery section. A saved LAN address can become unreachable. |
 | `adb` is not recognized | Add the Android SDK `platform-tools` directory to `PATH`, then open a new terminal. |
-| Phone is missing or `unauthorized` | Unlock it, accept USB debugging authorization, and check the cable and USB connection. Run `adb devices -l` again. |
+| Phone is missing or `unauthorized` | Unlock it, accept USB debugging authorization, and check the cable and USB connection. Run `adb devices` again. |
 | Port 8081 is already in use | Reuse the existing server if it belongs to this project. Otherwise, stop that server in its own terminal before starting this one. |
 | Unknown module after Fast Refresh or stale UI | Reload with `r` in Metro. If needed, stop Metro and restart with `npx expo start --dev-client --localhost --port 8081 --clear`, then run the USB launch command again. |
 | Native module is missing or incompatible | Rebuild the development app after checking dependency compatibility with `npx expo install --check`. Restarting Metro alone does not add native code to the installed app. |
