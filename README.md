@@ -1,56 +1,58 @@
-# Welcome to your Expo app 👋
+﻿# Little List
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A small, offline todo app for Android, iOS, and web, built with Expo SDK 58, React Native, TypeScript, and Expo Router.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Purple, pink, and white interface with animated progress, task entrances, and completion controls that respect the system Reduce Motion setting.
+- Add and edit tasks (up to 200 characters; blank titles are rejected).
+- Complete and reopen tasks; filter by All, Active, or Done.
+- Confirm or cancel task deletion.
+- Track completed tasks and remaining work.
+- Keep tasks across restarts with AsyncStorage.
+- Retry failed loading without overwriting saved data; failed saves keep the previous list and editor text.
+- Responsive layout, keyboard support, screen-reader labels, and large touch targets.
 
-   ```bash
-   npm install
-   ```
+Tasks stay on the current device or browser. There is no account, cloud sync, reminder service, or backup. Clearing app/browser data or uninstalling can remove tasks. Storage is not encrypted; avoid storing secrets. Concurrent editing in multiple browser tabs is not supported.
 
-2. Start the app
+## Run
 
-   ```bash
-   npx expo start
-   ```
+Requires Node.js 22.20 or newer and npm.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```sh
+npm ci
+npm start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Press `w` for web, or open a compatible Expo Go client on a device. For a native development build, use `npm run android` or `npm run ios` with the appropriate platform tooling. iOS local builds require macOS. EAS cloud builds are also supported through Expo's CLI workflow; this repository does not yet include EAS project configuration.
 
-### Other setup steps
+```sh
+npm run lint
+npm run typecheck
+npm test
+npx expo install --check
+npx expo export --platform web
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+The tests cover storage round trips, validation, corrupt data, and read/write failures. They do not replace native device testing. See [the release checklist](docs/TESTING.md).
 
-## Learn more
+## Structure
 
-To learn more about developing your project with Expo, look at the following resources:
+- `src/app/index.tsx`: todo screen and interaction state.
+- `src/components/task-row.tsx`: animated task cards, editing actions, and deletion confirmation.
+- `src/components/task-progress.tsx`: accessible progress summary and animation.
+- `src/constants/palette.ts`: shared interface colors.
+- `src/app/_layout.tsx`: root navigation and status bar.
+- `src/app/explore.tsx`: redirects legacy starter links home.
+- `src/hooks/use-tasks.ts`: loading, save state, and protection against overlapping writes.
+- `src/storage/tasks.ts`: task schema and validated persistence.
+- `tests/`: dependency-free storage regression tests.
+- `plugins/`: Android CMake path compatibility for Windows builds.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The unused components and illustration assets from the Expo starter remain available for reference, but are not part of the todo screen. App icons still use the starter artwork; replace them with your own branding before a store release. Native directories are generated and ignored by Git. Change native configuration through `app.json` and config plugins, then regenerate/rebuild as needed.
 
-## Join the community
+## GitHub
 
-Join our community of developers creating universal apps.
+Commit source, assets, `package.json`, and `package-lock.json`. Keep generated builds, `node_modules`, signing keys, and environment files out of Git. No secrets or environment variables are required to run the app. GitHub Actions runs lint, type checking, and tests on pushes and pull requests.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The app is currently styled for light mode. Existing application identifiers and deep-link scheme have been preserved. The MIT license retains the original Expo attribution.

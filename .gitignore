@@ -41,3 +41,9 @@ example
 # generated native folders
 /ios
 /android
+
+# Secrets and local agent settings
+.env
+.env.*
+!.env.example
+.claude/
